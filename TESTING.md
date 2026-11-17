@@ -69,6 +69,17 @@ Automated run: headless Chrome (Playwright), 375×812 viewport, base `http://127
 | S2 | ?tour=1 forces tour; required elements stay in DOM; Esc closes | ✅ Pass |
 | Z | no JS errors | ✅ Pass |
 
+## Readability (light + dark) – `tests/contrast.py`
+
+Every visible text element on Home, Customer account, Settings, Guide and the tour was measured for WCAG contrast at 375px in both themes.
+
+| Theme | Text elements checked | Lowest contrast ratio | Below WCAG AA |
+|---|---|---|---|
+| Light | 505 | 4.51:1 | 0 |
+| Dark | 505 | 5.58:1 | 0 |
+
+The first run found 9 real failures (white text on the lightest part of the green header gradient: 2.9–3.7:1, and the "Remind" label: 3.94:1). They were fixed by darkening the gradient stops and the label colour.
+
 ## Sample data comparison (`?today=2026-11-15`)
 
 | Phone | Expected | Hisaab | Match |
