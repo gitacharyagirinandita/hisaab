@@ -69,3 +69,27 @@ Automated run: headless Chrome (Playwright), 375×812 viewport, base `http://127
 Values in the Hisaab column were read from the rendered DOM (`#total-outstanding`, `[data-customer] [data-balance]`) by test checks 01–03 above.
 
 Screenshots: `tests/screens/`.
+
+## Live deployment check – https://hisaab-zeta-two.vercel.app
+
+Run on 2026-11-17 against the production Vercel deployment, in a real browser (Claude desktop browser pane), using the deployed `samples/` files.
+
+| Check | Result |
+|---|---|
+| `#import-box`, `#import-go`, `input#shot-input` present | ✅ |
+| `?today=2026-11-15` sets default entry date | ✅ |
+| Import sample → `#total-outstanding` = ₹11,820 | ✅ |
+| 8 rows, one per phone; all 8 `[data-balance]` match expected | ✅ |
+| All 8 `a[data-remind]` → `https://wa.me/91<phone>?text=…` with name and `Rs <balance>` | ✅ |
+| Search by name (`sunita`) and phone (`0105`) | ✅ |
+| Overdue sorted by days since last payment (61, 44, 43, 42, 27, 27, 24, 21) | ✅ |
+| Customer history newest first | ✅ |
+| Payment with screenshot → preview, then `img[data-shot]` thumbnail; balance 670 → 500 | ✅ |
+| Edit entry (→ 400) and delete (→ 670) recalculate | ✅ |
+| CSV export: 38 rows, per-customer totals equal expected balances | ✅ |
+| UPI ID configured → `upi://pay?pa=…&am=3470.00` in reminder | ✅ |
+| Hindi / Telugu / Kannada labels, amounts unchanged | ✅ |
+| Light ↔ dark toggle | ✅ |
+| Reload → data persists (₹11,820, 8 customers) | ✅ |
+| No `?today` → local date (2026-11-17) | ✅ |
+| 375 × 812 viewport: `scrollWidth` = 375 (no horizontal scroll) | ✅ |
