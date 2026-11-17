@@ -123,3 +123,21 @@ Run on 2026-11-17 against the production Vercel deployment, in a real browser (C
 | Reload → data persists (₹11,820, 8 customers) | ✅ |
 | No `?today` → local date (2026-11-17) | ✅ |
 | 375 × 812 viewport: `scrollWidth` = 375 (no horizontal scroll) | ✅ |
+
+## Final verification – live site, latest build (2026-11-17)
+
+Run against https://hisaab-zeta-two.vercel.app (build `452032a`, confirmed by fetching the deployed `styles.css`). Real browser (Claude desktop browser pane), 375×812 for layout checks. All checks passed.
+
+- Import official sample → `#total-outstanding` ₹11,820; 8 unique `[data-customer]` rows; every `[data-balance]` equals `sample-expected.json`.
+- All 8 `a[data-remind]` match `^https://wa.me/91<phone>?text=<encodeURIComponent(message)>$`, with the customer's name and `Rs <balance>`.
+- Add customer (name + 10-digit phone) → credit ₹600 (2026-11-01, "rice and oil") + payment ₹250 (2026-11-10, "cash") → balance 350, credit 600, paid 250.
+- Payment with screenshot: preview shown, then `img[data-shot]` rendered. History newest first (11-15, 11-10, 11-01).
+- Edit 250→300 → balance 200. Delete → 500. Dashboard total 12,320 = sum of positive balances.
+- Search: "kavitha", "98765 01", "9000000103", no-match.
+- Overdue: sorted desc; day counts equal independently computed days since last payment.
+- CSV: 40 rows; per-customer totals equal on-screen balances.
+- UPI: absent until the shopkeeper adds an ID; then `upi://pay?pa=lakshmistore@okaxis&…&am=3470.00&cu=INR`.
+- Hindi / Telugu / Kannada labels; amounts unchanged. Light ↔ dark toggle.
+- Real page load: totals, rows, customer entries and the IndexedDB screenshot all persist.
+- 375px: `scrollWidth` 375 on Home, Account, Account entry form, Settings, Guide and Add-customer sheet; no element extends past the viewport.
+- `?today` link: tour not shown; date defaults to 2026-11-15.
