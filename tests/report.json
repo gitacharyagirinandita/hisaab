@@ -1,0 +1,325 @@
+{
+ "base": "http://127.0.0.1:8765",
+ "passed": 43,
+ "total": 43,
+ "results": [
+  {
+   "test": "05 import textarea #import-box exists",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "06 import button #import-go exists",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "07 payment screenshot input#shot-input[type=file] exists",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "01 total outstanding = 11820",
+   "pass": true,
+   "detail": "\u20b911,820"
+  },
+  {
+   "test": "02 one customer row per phone",
+   "pass": true,
+   "detail": [
+    "9000000102",
+    "9000000106",
+    "9000000103",
+    "9000000104",
+    "9000000101",
+    "9000000108",
+    "9000000107",
+    "9000000105"
+   ]
+  },
+  {
+   "test": "03 every customer balance matches sample-expected.json",
+   "pass": true,
+   "detail": "all 8 match"
+  },
+  {
+   "test": "01b total equals sum of positive balances",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "01c customers_with_balance = 8",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "01d top defaulter listed first (9000000102)",
+   "pass": true,
+   "detail": "9000000102"
+  },
+  {
+   "test": "04 WhatsApp a[data-remind] \u2192 wa.me/91<phone>?text= with name + balance",
+   "pass": true,
+   "detail": "all 8 ok"
+  },
+  {
+   "test": "04b reminder opens in new tab, not auto-sent",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "13 search by name and phone",
+   "pass": true,
+   "detail": [
+    [
+     "9000000102"
+    ],
+    [
+     "9000000105"
+    ],
+    0
+   ]
+  },
+  {
+   "test": "16 overdue list sorted by days since last payment (desc)",
+   "pass": true,
+   "detail": [
+    [
+     "9000000105",
+     61
+    ],
+    [
+     "9000000104",
+     44
+    ],
+    [
+     "9000000108",
+     43
+    ],
+    [
+     "9000000102",
+     42
+    ],
+    [
+     "9000000106",
+     27
+    ],
+    [
+     "9000000103",
+     27
+    ],
+    [
+     "9000000107",
+     24
+    ],
+    [
+     "9000000101",
+     21
+    ]
+   ]
+  },
+  {
+   "test": "16b overdue day counts correct vs ?today=2026-11-15",
+   "pass": true,
+   "detail": {
+    "9000000101": 21,
+    "9000000102": 42,
+    "9000000103": 27,
+    "9000000104": 44,
+    "9000000105": 61,
+    "9000000106": 27,
+    "9000000107": 24,
+    "9000000108": 43
+   }
+  },
+  {
+   "test": "10 ?today sets default entry date",
+   "pass": true,
+   "detail": "2026-11-15"
+  },
+  {
+   "test": "09 customer history newest first",
+   "pass": true,
+   "detail": [
+    "2026-10-25",
+    "2026-10-23",
+    "2026-10-19",
+    "2026-10-10",
+    "2026-10-06",
+    "2026-09-27"
+   ]
+  },
+  {
+   "test": "05b account page shows balance",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "10b account page entry date uses ?today",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "08 saved payment shows img[data-shot] thumbnail (preview before save: True)",
+   "pass": true,
+   "detail": {
+    "src": "data:image/png;base64,",
+    "w": 2
+   }
+  },
+  {
+   "test": "06b balance recalculated after payment (670-170=500)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "09b new entry on 2026-11-15 shows first",
+   "pass": true,
+   "detail": [
+    "2026-11-15",
+    "payment",
+    "170"
+   ]
+  },
+  {
+   "test": "06c zero and negative amounts rejected",
+   "pass": true,
+   "detail": [
+    true,
+    true,
+    7
+   ]
+  },
+  {
+   "test": "11 data + screenshot survive refresh",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "14 edit (balance 400) and delete (balance 670) recalculate",
+   "pass": true,
+   "detail": [
+    400.0,
+    670.0
+   ]
+  },
+  {
+   "test": "14b dashboard total back to 11820 after edit+delete",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "15 CSV export rows match ledger (38 entries, balances match)",
+   "pass": true,
+   "detail": 38
+  },
+  {
+   "test": "19 UPI link in reminder when configured (invalid UPI rejected)",
+   "pass": true,
+   "detail": "store@okaxis&pn=Lakshmi%20Provision%20Store%20(fictional)&am=3470.00&cu=INR&tn=Hisaab%20dues\n\nThank you for your support!\n\n- Lakshmi Provision Store (fictional)"
+  },
+  {
+   "test": "19b no UPI link before configured",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "20 Hindi / Telugu / Kannada labels (numbers unchanged, persisted)",
+   "pass": true,
+   "detail": [
+    "\u092c\u0915\u093e\u092f\u093e \u0938\u0942\u091a\u0940\n8 | \u0915\u0941\u0932 \u092c\u0915\u093e\u092f\u093e",
+    "\u0c2e\u0c4a\u0c24\u0c4d\u0c24\u0c02 \u0c2c\u0c3e\u0c15\u0c40",
+    "\u0c92\u0c9f\u0ccd\u0c9f\u0cc1 \u0cac\u0cbe\u0c95\u0cbf"
+   ]
+  },
+  {
+   "test": "18 light/dark modes switch and persist",
+   "pass": true,
+   "detail": [
+    "rgb(243, 246, 244)",
+    "rgb(11, 20, 17)"
+   ]
+  },
+  {
+   "test": "17 no horizontal scroll at 375px (all views)",
+   "pass": true,
+   "detail": {
+    "#/": 375,
+    "#/settings": 375,
+    "account": 375,
+    "add-sheet": 375
+   }
+  },
+  {
+   "test": "C1 add customer: duplicate + invalid phone rejected, opening balance works",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "12a malformed JSON \u2192 clear error, data untouched",
+   "pass": true,
+   "detail": [
+    "Import failed. This is not valid JSON (Expected double-quoted property name in J",
+    "Import failed. JSON must contain a \"customers\" list."
+   ]
+  },
+  {
+   "test": "12 different shop JSON replaces old shop (no silent merge), skips invalid rows",
+   "pass": true,
+   "detail": [
+    1499.5,
+    {
+     "8123456789": 1200.0,
+     "9876543210": 299.5,
+     "7000000001": 0.0
+    },
+    "Import complete. Loaded \"Sri Sai Stationery (test)\": 3 customers, 5 entries. Total outstanding: \u20b91,499.50.\nYour previous data was saved as an automatic backup ("
+   ]
+  },
+  {
+   "test": "12b user text escaped (no HTML injection)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "04c zero-balance customer gets no payment-due reminder",
+   "pass": true,
+   "detail": "https://wa.me/917000000001?text=Hello Zero Balance ji!\n\nYour account with us is fully settled. No payment is due.\n\nThank"
+  },
+  {
+   "test": "12c merge of unrelated shop data refused with message",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "12d re-import sample \u2192 11820 again; previous shop kept as auto-backup",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "11b data survives closing and reopening the tab",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "10c without ?today the entry date is the local date",
+   "pass": true,
+   "detail": "2026-11-17"
+  },
+  {
+   "test": "10d no UTC date shift in timezone Pacific/Honolulu",
+   "pass": true,
+   "detail": "paid on UPI\nPAYMENT 15 Sept 2026 \u00b7 Bal \u20b9230\n\u2212 \u20b9230"
+  },
+  {
+   "test": "10d no UTC date shift in timezone Pacific/Kiritimati",
+   "pass": true,
+   "detail": "paid on UPI\nPAYMENT 15 Sept 2026 \u00b7 Bal \u20b9230\n\u2212 \u20b9230"
+  },
+  {
+   "test": "Z no JS errors / native dialogs during run",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}
