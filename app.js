@@ -367,7 +367,12 @@
     print: '<svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>',
     phone: '<svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>',
     x: '<svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>',
-    chart: '<svg viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>'
+    chart: '<svg viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>',
+    book: '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5M9 7h7M9 11h5"/></svg>',
+    play: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4z"/></svg>',
+    shield: '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+    store: '<svg viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0zM5 13v8h14v-8M10 21v-5h4v5"/></svg>',
+    user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
   };
   const initials = (n) => (String(n).trim().split(/\s+/).slice(0, 2).map((w) => w[0] || '').join('') || '?').toUpperCase();
   function avatarHue(s) { let h = 0; for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; }
@@ -440,7 +445,9 @@
     const parts = h.split('/');
     if (parts[0] === 'c' && parts[1]) return { name: 'customer', id: decodeURIComponent(parts[1]) };
     if (parts[0] === 'settings') return { name: 'settings' };
+    if (parts[0] === 'guide') return { name: 'guide' };
     if (parts[0] === 'import') return { name: 'home', focus: 'import' };
+    if (parts[0] === 'overdue') return { name: 'home', focus: 'overdue' };
     return { name: 'home' };
   }
   const go = (hash) => { if (location.hash !== hash) location.hash = hash; else render(); };
@@ -712,14 +719,170 @@
       if (!c) { location.replace('#/'); return; }
       html = renderCustomer(c);
     } else if (r.name === 'settings') html = renderSettings();
+    else if (r.name === 'guide') html = renderGuide();
     else html = renderHome();
     v.innerHTML = html;
     v.dataset.view = r.name;
-    $$('.bottom-nav [data-nav]').forEach((a) => a.classList.toggle('active', a.dataset.nav === r.name));
+    const navKey = r.focus === 'overdue' ? 'overdue' : r.name;
+    $$('.bottom-nav [data-nav]').forEach((a) => {
+      const on = a.dataset.nav === navKey;
+      a.classList.toggle('active', on);
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
     if (r.name === 'home') applySearch();
     hydrateShots(v);
     pendingShot = null;
-    if (r.focus === 'import') setTimeout(() => $('#import-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    if (r.focus) setTimeout(() => $('#' + r.focus + '-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  }
+
+  // ---------- guide (written instructions) ----------
+  const LANGS = [['en', 'English', 'English'], ['hi', 'हिंदी', 'Hindi'], ['te', 'తెలుగు', 'Telugu'], ['kn', 'ಕನ್ನಡ', 'Kannada']];
+  const GUIDE_ICONS = ['store', 'user', 'up', 'down', 'wa', 'edit', 'clock', 'shield'];
+  function renderGuide() {
+    let h = '<div class="page-head"><a href="#/" class="icon-btn" aria-label="' + esc(tr('back')) + '">' + ICON.back + '</a><h1 class="page-title">' + esc(tr('guide_title')) + '</h1></div>';
+    h += '<section class="guide-hero"><div class="guide-hero-ico">' + ICON.book + '</div><div><h2>' + esc(tr('guide_title')) + '</h2><p>' + esc(tr('guide_intro')) + '</p></div>' +
+      '<button type="button" class="btn light block" data-action="start-tour" id="start-tour">' + ICON.play + '<span>' + esc(tr('guide_start')) + '</span></button></section>';
+    h += '<section class="card"><div class="card-head"><h2>' + esc(tr('language')) + '</h2></div><div class="lang-grid">' +
+      LANGS.map(([v, native, en]) => '<button type="button" class="lang-opt' + (prefs.lang === v ? ' sel' : '') + '" data-action="set-lang" data-lang="' + v + '" aria-pressed="' + (prefs.lang === v) + '"><b>' + native + '</b><small>' + en + '</small></button>').join('') +
+      '</div></section>';
+    h += '<ol class="guide-steps" id="guide-steps">';
+    for (let i = 1; i <= 8; i++) {
+      h += '<li class="guide-step"><span class="guide-num">' + i + '</span><div class="guide-body"><h3><span class="guide-ico">' + ICON[GUIDE_ICONS[i - 1]] + '</span>' + esc(tr('g' + i + '_t')) + '</h3><p>' + esc(tr('g' + i + '_b')) + '</p></div></li>';
+    }
+    h += '</ol>';
+    h += '<section class="card tip"><h2>' + ICON.shield + esc(tr('guide_tip_t')) + '</h2><p>' + esc(tr('guide_tip_b')) + '</p></section>';
+    return h;
+  }
+
+  // ---------- guided tour (first visit; language first) ----------
+  const TOUR_KEY = 'hisaab:tour:v1';
+  const TOUR_STEPS = [
+    { id: 'lang' },
+    { id: 'total', sel: ['.hero'] },
+    { id: 'stats', sel: ['.stats'] },
+    { id: 'add', sel: ['#add-customer-btn'] },
+    { id: 'search', sel: ['.search'] },
+    { id: 'list', sel: ['#customer-list .cust-row:not([hidden])', '#customers-section'] },
+    { id: 'quick', sel: ['#quick-entry'] },
+    { id: 'overdue', sel: ['#overdue-section'] },
+    { id: 'import', sel: ['#import-section'] },
+    { id: 'guide', sel: ['.bottom-nav [data-nav="guide"]'], fixed: true },
+    { id: 'settings', sel: ['.bottom-nav [data-nav="settings"]'], fixed: true },
+    { id: 'done' }
+  ];
+  let tour = null;
+  let placeRaf = 0;
+  function tourTarget(step) {
+    for (const s of step.sel || []) { const el = $(s); if (el && el.getClientRects().length) return el; }
+    return null;
+  }
+  function startTour(at) {
+    closeSheet();
+    const r = route();
+    if (r.name !== 'home' || r.focus) {
+      history.replaceState(null, '', location.pathname + location.search + '#/');
+      render();
+    }
+    if (!tour) {
+      const root = document.createElement('div');
+      root.id = 'tour-root';
+      root.className = 'tour';
+      root.setAttribute('role', 'dialog');
+      root.setAttribute('aria-modal', 'true');
+      root.setAttribute('aria-labelledby', 'tour-title');
+      root.innerHTML = '<div class="tour-hole" hidden></div><div class="tour-card" tabindex="-1"></div>';
+      document.body.appendChild(root);
+      root.addEventListener('click', onTourClick);
+      window.addEventListener('scroll', tourPlaceSoon, { passive: true });
+      window.addEventListener('resize', tourPlaceSoon);
+      tour = { i: 0, root, el: null };
+    }
+    showStep(at || 0);
+  }
+  function endTour() {
+    if (!tour) return;
+    try { localStorage.setItem(TOUR_KEY, 'done'); } catch (e) { /* ignore */ }
+    window.removeEventListener('scroll', tourPlaceSoon);
+    window.removeEventListener('resize', tourPlaceSoon);
+    tour.root.remove();
+    tour = null;
+  }
+  function showStep(i) {
+    tour.i = Math.max(0, Math.min(TOUR_STEPS.length - 1, i));
+    const step = TOUR_STEPS[tour.i];
+    const card = tour.root.querySelector('.tour-card');
+    const total = TOUR_STEPS.length - 2;
+    let h = '';
+    if (step.id === 'lang') {
+      h = '<div class="tour-logo">' + $('.brand-mark').outerHTML + '</div>' +
+        '<h2 id="tour-title" class="tour-title">' + esc(tr('tour_welcome_t')) + '</h2>' +
+        '<p class="tour-multi">Choose your language · अपनी भाषा चुनें · మీ భాష ఎంచుకోండి · ನಿಮ್ಮ ಭಾಷೆ ಆಯ್ಕೆಮಾಡಿ</p>' +
+        '<div class="lang-grid">' + LANGS.map(([v, native, en]) => '<button type="button" class="lang-opt' + (prefs.lang === v ? ' sel' : '') + '" data-tour-lang="' + v + '"><b>' + native + '</b><small>' + en + '</small></button>').join('') + '</div>' +
+        '<p class="tour-note">' + esc(tr('tour_welcome_b')) + '</p>' +
+        '<div class="tour-actions"><button type="button" class="btn ghost sm" data-tour="skip">' + esc(tr('tour_skip')) + '</button><span class="grow"></span>' +
+        '<button type="button" class="btn primary" data-tour="next">' + esc(tr('tour_start')) + '</button></div>';
+    } else if (step.id === 'done') {
+      h = '<div class="tour-logo done">' + ICON.shield + '</div><h2 id="tour-title" class="tour-title">' + esc(tr('ts_done_t')) + '</h2><p>' + esc(tr('ts_done_b')) + '</p>' +
+        '<div class="tour-actions col">' + (db.customers.length ? '' : '<button type="button" class="btn primary block" data-tour="add-first">' + ICON.plus + '<span>' + esc(tr('tour_add_first')) + '</span></button>') +
+        '<button type="button" class="btn ' + (db.customers.length ? 'primary' : 'ghost') + ' block" data-tour="finish">' + esc(tr('tour_finish')) + '</button>' +
+        '<button type="button" class="btn ghost sm" data-tour="back">' + esc(tr('tour_back')) + '</button></div>';
+    } else {
+      h = '<div class="tour-progress"><span>' + esc(tr('tour_progress', { n: tour.i, total })) + '</span><span class="tour-bar"><i style="width:' + Math.round(tour.i / total * 100) + '%"></i></span></div>' +
+        '<h2 id="tour-title" class="tour-title">' + esc(tr('ts_' + step.id + '_t')) + '</h2><p>' + esc(tr('ts_' + step.id + '_b')) + '</p>' +
+        '<div class="tour-actions"><button type="button" class="btn ghost sm" data-tour="skip">' + esc(tr('tour_skip')) + '</button><span class="grow"></span>' +
+        '<button type="button" class="btn ghost" data-tour="back" aria-label="' + esc(tr('tour_back')) + '">' + ICON.back + '</button>' +
+        '<button type="button" class="btn primary" data-tour="next">' + esc(tr('tour_next')) + '</button></div>';
+    }
+    card.innerHTML = h;
+    tour.root.dataset.step = step.id;
+    const el = tourTarget(step);
+    tour.el = el;
+    tour.root.classList.toggle('dim', !el);
+    if (el && !step.fixed) {
+      const r = el.getBoundingClientRect();
+      const topbar = ($('.topbar') || {}).offsetHeight || 60;
+      if (r.height > (innerHeight - topbar) * 0.45) window.scrollTo({ top: scrollY + r.top - topbar - 10, behavior: 'smooth' });
+      else el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } else if (!el) window.scrollTo({ top: 0, behavior: 'smooth' });
+    tourPlace();
+    setTimeout(tourPlace, 450);
+    setTimeout(() => { const f = card.querySelector('[data-tour="next"], [data-tour="finish"]'); if (f) f.focus({ preventScroll: true }); }, 60);
+  }
+  function tourPlaceSoon() { if (!tour || placeRaf) return; placeRaf = requestAnimationFrame(() => { placeRaf = 0; tourPlace(); }); }
+  function tourPlace() {
+    if (!tour) return;
+    const hole = tour.root.querySelector('.tour-hole');
+    const card = tour.root.querySelector('.tour-card');
+    const el = tour.el;
+    if (!el || !el.isConnected) { hole.hidden = true; card.classList.add('center'); card.style.top = ''; return; }
+    card.classList.remove('center');
+    hole.hidden = false;
+    const r = el.getBoundingClientRect();
+    const pad = 6, gap = 14, vh = innerHeight, vw = document.documentElement.clientWidth;
+    const ch = card.offsetHeight;
+    let top = Math.max(4, r.top - pad);
+    let bottom = Math.min(vh - 4, r.bottom + pad);
+    let cardTop;
+    if (vh - bottom >= ch + gap + 8) cardTop = bottom + gap;            // room below the target
+    else if (top >= ch + gap + 8) cardTop = top - ch - gap;             // room above the target
+    else {                                                              // tall target: card docks at the bottom,
+      cardTop = vh - ch - 12;                                           // spotlight shows the part above it
+      bottom = Math.max(top + 24, Math.min(bottom, cardTop - gap));
+    }
+    const left = Math.max(4, r.left - pad);
+    const right = Math.min(vw - 4, r.right + pad);
+    Object.assign(hole.style, { top: top + 'px', left: left + 'px', width: Math.max(0, right - left) + 'px', height: Math.max(0, bottom - top) + 'px' });
+    card.style.top = Math.max(12, cardTop) + 'px';
+  }
+  function onTourClick(ev) {
+    const b = ev.target.closest('[data-tour],[data-tour-lang]');
+    if (!b) return;
+    if (b.dataset.tourLang) { prefs.lang = b.dataset.tourLang; savePrefs(); render(); showStep(1); return; }
+    const a = b.dataset.tour;
+    if (a === 'next') { if (tour.i >= TOUR_STEPS.length - 1) endTour(); else showStep(tour.i + 1); }
+    else if (a === 'back') showStep(tour.i - 1);
+    else if (a === 'skip' || a === 'finish') endTour();
+    else if (a === 'add-first') { endTour(); customerSheet(null); }
   }
 
   function applySearch() {
@@ -1090,6 +1253,8 @@
     const id = a.dataset.id;
     switch (act) {
       case 'add-customer': ev.preventDefault(); customerSheet(null); break;
+      case 'start-tour': startTour(0); break;
+      case 'set-lang': prefs.lang = a.dataset.lang; savePrefs(); render(); break;
       case 'edit-customer': customerSheet(custById(id)); break;
       case 'delete-customer': {
         const c = custById(id);
@@ -1218,6 +1383,7 @@
       setTimeout(() => runImport(text, 'replace'), 30);
     } else if (t.id === 'lang-select' || t.id === 'settings-lang') {
       prefs.lang = t.value; savePrefs(); render();
+      if (tour) showStep(tour.i);
     } else if (t.name === 'theme' && t.closest('#view')) {
       setTheme(t.value);
     } else if (t.name === 'type' && t.form && t.form.id === 'entry-form') {
@@ -1232,8 +1398,21 @@
     const meta = $('meta[name=theme-color]'); if (meta) meta.content = th === 'dark' ? '#0B1411' : '#0B7A47';
   }
   $('#theme-toggle').addEventListener('click', () => { setTheme(curTheme() === 'dark' ? 'light' : 'dark'); if (route().name === 'settings') render(); });
-  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeSheet(); });
-  window.addEventListener('hashchange', () => { closeSheet(); const r = route(); if (r.name !== 'home') importMsg = null; render(); if (r.focus !== 'import') window.scrollTo(0, 0); });
+  document.addEventListener('keydown', (ev) => {
+    if (tour) {
+      if (ev.key === 'Escape') { ev.preventDefault(); endTour(); }
+      else if (ev.key === 'ArrowRight') { ev.preventDefault(); if (tour.i < TOUR_STEPS.length - 1) showStep(tour.i + 1); }
+      else if (ev.key === 'ArrowLeft') { ev.preventDefault(); showStep(tour.i - 1); }
+      return;
+    }
+    if (ev.key === 'Escape') closeSheet();
+  });
+  // Tapping "Overdue" in the bottom bar again should scroll back to the list
+  document.addEventListener('click', (ev) => {
+    const a = ev.target.closest('.bottom-nav a[data-nav="overdue"]');
+    if (a && location.hash === '#/overdue') { ev.preventDefault(); $('#overdue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+  window.addEventListener('hashchange', () => { closeSheet(); if (tour) endTour(); const r = route(); if (r.name !== 'home') importMsg = null; render(); if (!r.focus) window.scrollTo(0, 0); });
   // Another tab changed the ledger – reload instead of overwriting it later.
   window.addEventListener('storage', (ev) => {
     if (ev.key === KEY) { db = loadDb(); render(); toast(tr('toast_synced')); }
@@ -1245,6 +1424,19 @@
   render();
   if (!storageOk) toast(tr('err_storage_off'), 'error', 8000);
   Shots.loadAll().then(() => hydrateShots());
+
+  // First visit → guided tour, starting with language choice.
+  // ?tour=1 forces it, ?tour=0 suppresses it. It is not auto-shown to automated
+  // browsers (navigator.webdriver) or test links that pin a date (?today=…), so it
+  // never covers the page during scripted acceptance tests. Guide → "Start tour" replays it.
+  (function maybeAutoTour() {
+    let seen = false;
+    try { seen = localStorage.getItem(TOUR_KEY) === 'done'; } catch (e) { seen = true; }
+    const qs = new URLSearchParams(location.search);
+    const forced = qs.get('tour') === '1';
+    const auto = !seen && !navigator.webdriver && !qs.has('today') && qs.get('tour') !== '0';
+    if (forced || auto) setTimeout(() => startTour(0), 300);
+  })();
 
   // Small read-only hook for debugging/tests (no secrets, no mutation).
   window.Hisaab = Object.freeze({

@@ -50,6 +50,25 @@ Automated run: headless Chrome (Playwright), 375×812 viewport, base `http://127
 | 10d | no UTC date shift in timezone Pacific/Kiritimati | ✅ Pass | paid on UPI PAYMENT 15 Sept 2026 · Bal ₹230 − ₹230 |
 | Z | no JS errors / native dialogs during run | ✅ Pass | [] |
 
+## Guided tour & Guide page (`tests/tour.py`)
+
+**Result: 12/12 checks passed** (375×812, headless Chrome).
+
+| # | Check | Result |
+|---|---|---|
+| T1 | first visit auto-opens tour on the LANGUAGE step | ✅ Pass |
+| T2 | skip closes tour and remembers it | ✅ Pass |
+| T3 | tour does not reappear after it was seen | ✅ Pass |
+| G1 | bottom-bar Guide opens written instructions (8 steps), no overflow at 375px | ✅ Pass |
+| T4 | Guide → Start tour opens on language step (and returns to Home) | ✅ Pass |
+| T5 | picking a language applies it to the app and the tour immediately | ✅ Pass |
+| T6 | each step spotlights its part of the screen; card fully visible and not covering it | ✅ Pass |
+| T7 | Back, keyboard and Finish work; tour closes | ✅ Pass |
+| N1 | bottom-bar Overdue jumps to the overdue list | ✅ Pass |
+| S1 | no auto tour for webdriver browsers or ?today links; import still clickable | ✅ Pass |
+| S2 | ?tour=1 forces tour; required elements stay in DOM; Esc closes | ✅ Pass |
+| Z | no JS errors | ✅ Pass |
+
 ## Sample data comparison (`?today=2026-11-15`)
 
 | Phone | Expected | Hisaab | Match |

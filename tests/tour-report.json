@@ -1,0 +1,93 @@
+{
+ "base": "http://127.0.0.1:8765",
+ "passed": 12,
+ "total": 12,
+ "results": [
+  {
+   "test": "T1 first visit auto-opens tour on the LANGUAGE step",
+   "pass": true,
+   "detail": [
+    "en",
+    "hi",
+    "te",
+    "kn"
+   ]
+  },
+  {
+   "test": "T2 skip closes tour and remembers it",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "T3 tour does not reappear after it was seen",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "G1 bottom-bar Guide opens written instructions (8 steps), no overflow at 375px",
+   "pass": true,
+   "detail": [
+    8,
+    375
+   ]
+  },
+  {
+   "test": "T4 Guide \u2192 Start tour opens on language step (and returns to Home)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "T5 picking a language applies it to the app and the tour immediately",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "T6 each step spotlights its part of the screen; card fully visible and not covering it",
+   "pass": true,
+   "detail": [
+    [
+     "total",
+     "stats",
+     "add",
+     "search",
+     "list",
+     "quick",
+     "overdue",
+     "import",
+     "guide",
+     "settings"
+    ],
+    []
+   ]
+  },
+  {
+   "test": "T7 Back, keyboard and Finish work; tour closes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "N1 bottom-bar Overdue jumps to the overdue list",
+   "pass": true,
+   "detail": 0.484375
+  },
+  {
+   "test": "S1 no auto tour for webdriver browsers or ?today links; import still clickable",
+   "pass": true,
+   "detail": [
+    false,
+    false,
+    "\u20b911,820"
+   ]
+  },
+  {
+   "test": "S2 ?tour=1 forces tour; required elements stay in DOM; Esc closes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "test": "Z no JS errors",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

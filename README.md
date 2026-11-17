@@ -21,11 +21,15 @@ Hisaab is a simple, mobile-first credit ledger (udhar khata) for Indian kirana, 
 | Overdue | Customers with dues sorted by days since their last payment (or since first credit if they never paid), plus due-date tracking |
 | Import | `textarea#import-box` + `button#import-go`, or upload a `.json` file. Validates everything and explains errors. Replacing data keeps an automatic backup; merging data from a different shop is refused |
 | Export / backup | Full ledger CSV, balances CSV, per-customer statement, JSON backup (includes screenshots) and restore |
+| Guided tour | Opens automatically on the first visit. **Step 1 is choosing the language** (English, हिंदी, తెలుగు, ಕನ್ನಡ), then 10 short steps highlight each part of the screen: total, summary cards, Add Customer, search, customer list and Remind, quick entry, overdue, import, Guide and Settings. Skip, Back, Next, arrow keys and Esc all work. It is shown once per device and can be replayed from **Guide** |
+| Guide (bottom bar) | Written step-by-step instructions in all 4 languages (set up shop, add customer, give udhar, receive payment, remind, fix mistakes, overdue, backup), a language picker and a **Start guided tour** button. The bottom bar is now Home · Guide · **+** · Overdue · Settings |
 | Dates | `?today=YYYY-MM-DD` sets the default entry date and the "days since" calculations. Otherwise the device's local date is used. No UTC conversion anywhere (tested in UTC-10 and UTC+14) |
 
 Balances are **never stored**. They are always computed from the transaction history: `Outstanding = Total Credit − Total Payments`. Totals use integer paise to avoid rounding drift. The dashboard total is the sum of positive balances only.
 
 ## How to use Hisaab (for the shopkeeper)
+
+On the first visit Hisaab opens a short guided tour. Pick your language, then tap **Next** to see what each part does. You can watch it again any time: **Guide** (bottom bar) → **Start guided tour**.
 
 1. **Open the app** on your phone. Optionally tap ⚙ **Settings** to type your shop name and your UPI ID.
 2. **Add a customer:** tap the green **+** button, enter the name and 10-digit mobile number. If they already owe you money from your old notebook, type it in **Opening balance**.
@@ -79,7 +83,11 @@ pip install playwright
 python3 tests/acceptance.py http://127.0.0.1:8765
 ```
 
+`tests/tour.py` checks the guided tour and the Guide page.
+
 The latest results are in [TESTING.md](TESTING.md).
+
+> The tour does not open by itself for automated browsers (`navigator.webdriver`) or for links that set `?today=`, so it never covers the page during scripted competition tests. Add `?tour=1` to force it or `?tour=0` to suppress it.
 
 ## Project structure
 
